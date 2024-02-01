@@ -96,11 +96,17 @@ function MonkeyConfig() {
         /* Expose public methods */
         cfg.open = open;
         cfg.close = close;
+        cfg.setHide = setHide;
         cfg.get = get;
         cfg.set = function (name, value) {
             set(name, value);
             update();
         };
+    }
+
+    function setHide(name, show) {
+       params[name].hide = show
+       return true
     }
     
     /**
@@ -522,7 +528,7 @@ function MonkeyConfig() {
                 openLayer.style.top = Math.round((window.innerHeight -
                         openLayer.clientHeight) / 2) + 'px';
                 openLayer.style.zIndex = 9999;
-            }, 0);
+            }, 100);
             
             body.appendChild(overlay);         
             body.appendChild(openLayer);
@@ -587,8 +593,12 @@ MonkeyConfig.HTML = {
             name.substring(0, 1).toUpperCase() + name.substring(1)
                 .replace(/_/g, '&nbsp;');
 
-        return '<label for="__MonkeyConfig_field_' + name + '">' + label +
+        let t = '<label for="__MonkeyConfig_field_' + name + '">' + label +
             '</label>';
+        if (options['info']) {
+            t += `<p style="font-size: .7rem; opacity: .7; margin-top: .1rem; color: green;">${options['info']}</p>`
+        }
+        return t;
     },
     'checkbox': function (name, options, data) {
         return '<input id="__MonkeyConfig_field_' + name + 
@@ -682,7 +692,7 @@ MonkeyConfig.HTML = {
 
 MonkeyConfig.formatters = {
     'tr': function (name, options, data) {
-        var html = '<tr>';
+        var html = `<tr style="display: ${options.hide ? 'none' : ''}">`;
 
         switch (options.type) {
         case 'checkbox':
